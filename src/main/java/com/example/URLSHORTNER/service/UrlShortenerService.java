@@ -40,7 +40,13 @@ public class UrlShortenerService {
     public UrlMapping resolve(String shortCode) {
         UrlMapping mapping = repository.findByShortCode(shortCode)
                 .orElseThrow(() -> new ShortCodeNotFoundException(shortCode));
-        return mapping;
+        mapping.recordVisit();
+        return repository.save(mapping);
+    }
+
+    public UrlMapping getAnalytics(String shortCode) {
+        return repository.findByShortCode(shortCode)
+                .orElseThrow(() -> new ShortCodeNotFoundException(shortCode));
     }
 
     private Optional<UrlMapping> findExisting(String hash) {

@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.example.URLSHORTNER.dto.AnalyticsResponse;
 import com.example.URLSHORTNER.dto.ShortenRequest;
 import com.example.URLSHORTNER.dto.ShortenResponse;
 import com.example.URLSHORTNER.entity.UrlMapping;
@@ -40,8 +41,15 @@ public class UrlController {
     @GetMapping("/{code}")
     public ResponseEntity<Void> redirect(@PathVariable String code) {
         UrlMapping mapping = service.resolve(code);
-        return ResponseEntity.status(HttpStatus.MOVED_PERMANENTLY)
+        return ResponseEntity.status(302)
                 .location(URI.create(mapping.getOriginalUrl()))
                 .build();
     }
+
+    @GetMapping("/api/analytics/{code}")
+    public ResponseEntity<AnalyticsResponse> analytics(@PathVariable String code) {
+        UrlMapping mapping = service.getAnalytics(code);
+        return ResponseEntity.ok(new AnalyticsResponse(mapping));
+    }
+
 }
