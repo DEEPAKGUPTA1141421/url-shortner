@@ -3,6 +3,7 @@ package com.example.URLSHORTNER.service;
 import com.example.URLSHORTNER.entity.UrlMapping;
 import com.example.URLSHORTNER.exception.AliasAlreadyTakenException;
 import com.example.URLSHORTNER.exception.InvalidUrlException;
+import com.example.URLSHORTNER.exception.ShortCodeNotFoundException;
 import com.example.URLSHORTNER.repository.UrlMappingRepository;
 
 import lombok.RequiredArgsConstructor;
@@ -34,6 +35,12 @@ public class UrlShortenerService {
         }
 
         return findExisting(hash).orElseGet(() -> createWithGeneratedCode(normalized, hash));
+    }
+
+    public UrlMapping resolve(String shortCode) {
+        UrlMapping mapping = repository.findByShortCode(shortCode)
+                .orElseThrow(() -> new ShortCodeNotFoundException(shortCode));
+        return mapping;
     }
 
     private Optional<UrlMapping> findExisting(String hash) {
